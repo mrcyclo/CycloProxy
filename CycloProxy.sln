@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32126.317
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CycloProxyCore", "CycloProxyCore\CycloProxyCore.csproj", "{8DB9A3F5-B32A-482E-A794-4B0CCA6CF8DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CycloProxy", "CycloProxy\CycloProxy.csproj", "{A07E75A9-C6D4-4F09-9073-6A77CB50CB61}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8DB9A3F5-B32A-482E-A794-4B0CCA6CF8DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB9A3F5-B32A-482E-A794-4B0CCA6CF8DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DB9A3F5-B32A-482E-A794-4B0CCA6CF8DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DB9A3F5-B32A-482E-A794-4B0CCA6CF8DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A07E75A9-C6D4-4F09-9073-6A77CB50CB61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A07E75A9-C6D4-4F09-9073-6A77CB50CB61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A07E75A9-C6D4-4F09-9073-6A77CB50CB61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A07E75A9-C6D4-4F09-9073-6A77CB50CB61}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8DCA5FD2-FE34-4591-92CD-2F38782A021F}
+	EndGlobalSection
+EndGlobal
