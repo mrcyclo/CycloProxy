@@ -14,12 +14,8 @@ namespace CycloProxyCore
         public Uri Url { get; private set; }
         public string HttpVersion { get; private set; }
 
-        public HttpContentHeaders Headers { get; private set; }
-
-        public HttpRequest()
-        {
-            //HttpParser
-        }
+        public Dictionary<string, List<string>> Headers { get; private set; } = new Dictionary<string, List<string>>();
+        public int ContentLength { get; private set; }
 
         public byte[] Body { get; private set; }
 
@@ -62,8 +58,26 @@ namespace CycloProxyCore
                 string headerName = headerLine.Substring(0, delimiterPosition).ToLower();
                 string headerValue = headerLine.Substring(delimiterPosition + 1);
 
+                // Set known header name
+                switch (headerName)
+                {
+                    case "content-length":
+                        bool isValidContentLength = int.TryParse(headerName, out int value);
+                        if (!isValidContentLength || value < 0) return false;
+
+                        ContentLength = value;
+                        continue;
+                }
+
                 // Add to header collection
-                Headers.Add(headerName, headerValue);
+                if (Headers.ContainsKey(headerName))
+                {
+                    Headers[headerName].Add(headerValue);
+                }
+                else
+                {
+                    Headers[headerName] = new List<string> { headerValue };
+                }
             }
 
             return true;
@@ -72,7 +86,7 @@ namespace CycloProxyCore
         public void SetByteBody(byte[] bytes)
         {
             Body = bytes;
-            Headers.ContentLength = bytes.Length;
+            ContentLength = bytes.Length;
         }
 
         public void SetStringBody(string body)

@@ -59,22 +59,9 @@ namespace CycloProxyCore
                 return;
             }
 
-            // Read request body
-            reqBytelist.Clear();
-            buffer = new byte[1024];
-            while (true)
-            {
-                int bytesRead = _clientSocket.Receive(buffer);
-                if (bytesRead == 0) break;
-
-                byte[] realBytes = new byte[bytesRead];
-                Array.Copy(buffer, realBytes, bytesRead);
-
-                reqBytelist.AddRange(realBytes);
-            }
-
-            // Set request body
-            request.SetByteBody(reqBytelist.ToArray());
+            // ----------------------- //
+            // Read request here later //
+            // ----------------------- //
 
             // Print debug
             Console.WriteLine($"{request.Method} {request.Url}");
