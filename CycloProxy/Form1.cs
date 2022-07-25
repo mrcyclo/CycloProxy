@@ -31,9 +31,9 @@ namespace CycloProxy
             {
                 await client.GetAsync("http://example.com");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Console.WriteLine(ex);
             }
             client.Dispose();
 

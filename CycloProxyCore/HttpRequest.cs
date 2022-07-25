@@ -10,6 +10,8 @@ namespace CycloProxyCore
 {
     public class HttpRequest
     {
+        public byte[] HeaderBytes { get; private set; }
+
         public HttpMethod Method { get; private set; }
         public Uri Url { get; private set; }
         public string HttpVersion { get; private set; }
@@ -17,10 +19,12 @@ namespace CycloProxyCore
         public Dictionary<string, List<string>> Headers { get; private set; } = new Dictionary<string, List<string>>();
         public int ContentLength { get; private set; }
 
-        public byte[] Body { get; private set; }
+        public byte[] BodyBytes { get; private set; }
 
         public bool TryParseHeaderFromBytes(byte[] bytes)
         {
+            HeaderBytes = bytes;
+
             // Split header line by line
             string headerString = Encoding.UTF8.GetString(bytes);
             string[] headerSplit = headerString.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
@@ -85,7 +89,7 @@ namespace CycloProxyCore
 
         public void SetByteBody(byte[] bytes)
         {
-            Body = bytes;
+            BodyBytes = bytes;
             ContentLength = bytes.Length;
         }
 
