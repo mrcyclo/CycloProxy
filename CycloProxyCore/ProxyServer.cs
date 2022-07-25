@@ -8,7 +8,7 @@ namespace CycloProxyCore
     {
         private bool _isRunning = false;
         private TcpListener _tcpListener;
-        private List<StreamMapItem> _streamMap;
+        private List<Pipeline> _streamMap;
 
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -41,22 +41,16 @@ namespace CycloProxyCore
             while (_isRunning)
             {
                 TcpClient client = _tcpListener.AcceptTcpClient();
-                Task.Run(() => SocketHandler(client));
+                Task.Run(() => new Pipeline(client));
             }
         }
 
+        /*
         private void SocketHandler(TcpClient client)
         {
             Console.WriteLine($"AcceptSocket: {client.Client.RemoteEndPoint}");
 
-            IPHostEntry ipHostInfo = Dns.GetHostEntry("example.com");
-            IPAddress ipAddress = ipHostInfo.AddressList[0];
-            IPEndPoint ipEndpoint = new IPEndPoint(ipAddress, 80);
-
-            TcpClient remote = new TcpClient(ipAddress.ToString(), 80);
-
-            Task.Run(() => StreamReadHandler(client.Client, remote.Client));
-            Task.Run(() => StreamWriteHandler(client.Client, remote.Client));
+            Task.Run(() => new Pipeline(client));
         }
 
         private async void StreamReadHandler(Socket client, Socket remote)
@@ -114,5 +108,6 @@ namespace CycloProxyCore
                 return false;
             }
         }
+        */
     }
 }
