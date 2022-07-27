@@ -29,7 +29,7 @@ namespace CycloProxy
             });
             try
             {
-                await client.GetAsync("http://example.com");
+                await client.GetAsync("https://example.com");
             }
             catch (Exception ex)
             {

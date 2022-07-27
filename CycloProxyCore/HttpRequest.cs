@@ -36,11 +36,21 @@ namespace CycloProxyCore
             if (requestLineSplit.Length < 3) return false;
 
             // Try to set method
-            Method = new HttpMethod(requestLineSplit[0]);
+            object? parsedMethod;
+            bool isValidMethod = Enum.TryParse(typeof(HttpMethod), requestLineSplit[0], out parsedMethod);
+            if (!isValidMethod || parsedMethod == null) return false;
+
+            // Set valid method
+            Method = (HttpMethod)parsedMethod;
 
             // Try to parse url
+            string rawUrl = requestLineSplit[1];
+            if (Method == HttpMethod.CONNECT)
+            {
+                rawUrl = "http://" + rawUrl;
+            }
             Uri? parsedUri;
-            bool isValidUrl = Uri.TryCreate(requestLineSplit[1], UriKind.Absolute, out parsedUri);
+            bool isValidUrl = Uri.TryCreate(rawUrl, UriKind.Absolute, out parsedUri);
             if (!isValidUrl || parsedUri == null) return false;
 
             // Set valid url
