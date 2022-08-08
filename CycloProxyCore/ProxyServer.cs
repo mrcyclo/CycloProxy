@@ -51,65 +51,74 @@ namespace CycloProxyCore
 
             try
             {
-                // Try to read first header
-                bool isRead = ReceiveFirstHeaderFromClient(client, out HttpRequest request);
-                if (isRead == false) return;
-
-                // Handle connect request
-                if (request.Method == HttpMethod.CONNECT)
-                {
-                    client.Client.Send(Encoding.UTF8.GetBytes(request.HttpVersion + " 200 Connection Established\r\n"));
-                }
-
-                // Dns resolve
-                IPHostEntry ipHostEntry = Dns.GetHostEntry(request.Url.DnsSafeHost);
-                if (ipHostEntry.AddressList.Length == 0)
-                {
-                    Console.WriteLine($"Can not resolve ip of {request.Url.DnsSafeHost}.");
-                    return;
-                }
-
-                // Get host ip
-                IPAddress ipAddress = ipHostEntry.AddressList.First();
-                IPEndPoint ipEndPoint = new IPEndPoint(ipAddress, request.Url.Port);
-
-                // Create remote tcp client
-                try
-                {
-                    remote.Connect(ipEndPoint);
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine($"Can not connect to {request.Url.DnsSafeHost}.");
-                    return;
-                }
-
-                // Send first header
-                try
-                {
-                    remote.Client.Send(request.HeaderBytes);
-                    Console.WriteLine("Client -> Remote (first package).");
-                }
-                catch (SocketException ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    return;
-                }
-
-                Tunnel tunnel = new Tunnel(client, remote);
-                while (tunnel.IsActive())
-                {
-                    await Task.Delay(1000);
-                }
+                CreateTunnel(client, remote);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
-            finally
+
+            client.Dispose();
+            remote.Dispose();
+        }
+
+        private void CreateTunnel(TcpClient client, TcpClient remote)
+        {
+            // Try to read first header
+            bool isRead = ReceiveFirstHeaderFromClient(client, out HttpRequest request);
+            if (isRead == false) return;
+
+            // Handle connect request
+            if (request.Method == HttpMethod.CONNECT)
             {
-                client.Dispose();
-                remote.Dispose();
+                client.Client.Send(Encoding.UTF8.GetBytes(request.HttpVersion + " 200 Connection Established\r\nConnection: close\r\n\r\n"));
+            }
+
+            // Dns resolve
+            IPHostEntry ipHostEntry = Dns.GetHostEntry(request.Url.DnsSafeHost);
+            if (ipHostEntry.AddressList.Length == 0)
+            {
+                Console.WriteLine($"Can not resolve ip of {request.Url.DnsSafeHost}.");
+                return;
+            }
+
+            // Get host ip
+            IPAddress ipAddress = ipHostEntry.AddressList.First();
+            IPEndPoint ipEndPoint = new IPEndPoint(ipAddress, request.Url.Port);
+
+            // Create remote tcp client
+            try
+            {
+                remote.Connect(ipEndPoint);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"Can not connect to {request.Url.DnsSafeHost} (1).");
+                return;
+            }
+
+            if (remote.Client.RemoteEndPoint == null)
+            {
+                Console.WriteLine($"Can not connect to {request.Url.DnsSafeHost} (2).");
+                return;
+            }
+
+            // Send first header
+            try
+            {
+                remote.Client.Send(request.HeaderBytes);
+                Console.WriteLine("Client -> Remote (first header).");
+            }
+            catch (SocketException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return;
+            }
+
+            Tunnel tunnel = new Tunnel(client, remote);
+            while (tunnel.IsActive())
+            {
+                Task.Delay(1000).Wait();
             }
         }
 
