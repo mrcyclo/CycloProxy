@@ -45,7 +45,7 @@ namespace CycloProxyCore
             }
         }
 
-        private async void HandleClientRequest(TcpClient client)
+        private void HandleClientRequest(TcpClient client)
         {
             TcpClient remote = new TcpClient();
 
@@ -67,12 +67,6 @@ namespace CycloProxyCore
             // Try to read first header
             bool isRead = ReceiveFirstHeaderFromClient(client, out HttpRequest request);
             if (isRead == false) return;
-
-            // Handle connect request
-            if (request.Method == HttpMethod.CONNECT)
-            {
-                client.Client.Send(Encoding.UTF8.GetBytes(request.HttpVersion + " 200 Connection Established\r\nConnection: close\r\n\r\n"));
-            }
 
             // Dns resolve
             IPHostEntry ipHostEntry = Dns.GetHostEntry(request.Url.DnsSafeHost);
@@ -103,16 +97,16 @@ namespace CycloProxyCore
                 return;
             }
 
-            // Send first header
-            try
+            // Handle connect request
+            if (request.Method == HttpMethod.CONNECT)
             {
+                client.Client.Send(Encoding.UTF8.GetBytes(request.HttpVersion + " 200 Connection Established\r\nConnection: close\r\n\r\n"));
+            }
+            else
+            {
+                // Send first header
                 remote.Client.Send(request.HeaderBytes);
                 Console.WriteLine("Client -> Remote (first header).");
-            }
-            catch (SocketException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return;
             }
 
             Tunnel tunnel = new Tunnel(client, remote);
@@ -163,9 +157,9 @@ namespace CycloProxyCore
                 return false;
             }
 
-            // ----------------------- //
-            // Read request here later //
-            // ----------------------- //
+            // ---------------------------- //
+            // Read request body here later //
+            // ---------------------------- //
 
             // Print debug
             Console.WriteLine($"{request.Method} {request.Url}");
