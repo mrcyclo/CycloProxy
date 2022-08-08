@@ -109,6 +109,7 @@ namespace CycloProxyCore
                 Console.WriteLine("Client -> Remote (first header).");
             }
 
+            // Create a tunnel
             Tunnel tunnel = new Tunnel(client, remote);
             while (tunnel.IsActive())
             {
