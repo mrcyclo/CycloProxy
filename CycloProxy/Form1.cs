@@ -23,22 +23,25 @@ namespace CycloProxy
         {
             button1.Enabled = false;
 
-            HttpClient client = new HttpClient(new HttpClientHandler
-            {
-                Proxy = new WebProxy
-                {
-                    Address = new Uri($"http://localhost:" + port),
-                }
-            });
-            try
-            {
-                await client.GetAsync("https://example.com");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            client.Dispose();
+            CertMaker cm = new CertMaker();
+            cm.Install();
+
+            //HttpClient client = new HttpClient(new HttpClientHandler
+            //{
+            //    Proxy = new WebProxy
+            //    {
+            //        Address = new Uri($"http://localhost:" + port),
+            //    }
+            //});
+            //try
+            //{
+            //    await client.GetAsync("https://example.com");
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex);
+            //}
+            //client.Dispose();
 
             button1.Enabled = true;
         }
