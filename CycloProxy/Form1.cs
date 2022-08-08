@@ -5,7 +5,7 @@ namespace CycloProxy
 {
     public partial class Form1 : Form
     {
-        private int port = 8877;
+        private int port = 8888;
 
         public Form1()
         {
@@ -15,7 +15,7 @@ namespace CycloProxy
         private void Form1_Load(object sender, EventArgs e)
         {
             ProxyServer proxy = new ProxyServer();
-            proxy.CustomDNS.Add("keycloak.local", "127.0.0.1");
+            proxy.CustomDNS.Add("www.bing.com", "127.0.0.1");
             proxy.Start(IPAddress.Any, port);
         }
 

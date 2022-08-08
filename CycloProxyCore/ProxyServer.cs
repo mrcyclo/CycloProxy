@@ -57,6 +57,12 @@ namespace CycloProxyCore
             }
             catch (Exception ex)
             {
+                HttpResponse response = new HttpResponse();
+                response.StatusCode = 400;
+                response.Description = "Bad Request";
+                response.SetStringBody(ex.ToString());
+                client.Client.Send(response.GetBytes());
+
                 Console.WriteLine(ex);
             }
 
@@ -68,7 +74,10 @@ namespace CycloProxyCore
         {
             // Try to read first header
             bool isRead = ReceiveFirstHeaderFromClient(client, out HttpRequest request);
-            if (isRead == false) return;
+            if (isRead == false)
+            {
+                throw new Exception("Can not parse request header.");
+            }
 
             // Dns resolve
             IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Any, 0);
@@ -83,8 +92,7 @@ namespace CycloProxyCore
                 IPHostEntry ipHostEntry = Dns.GetHostEntry(request.Url.DnsSafeHost);
                 if (ipHostEntry.AddressList.Length == 0)
                 {
-                    Console.WriteLine($"Can not resolve ip of {request.Url.DnsSafeHost}.");
-                    return;
+                    throw new Exception($"Can not resolve ip of {request.Url.DnsSafeHost}.");
                 }
 
                 IPAddress ipAddress = ipHostEntry.AddressList.First();
@@ -98,14 +106,7 @@ namespace CycloProxyCore
             }
             catch (Exception)
             {
-                Console.WriteLine($"Can not connect to {request.Url.DnsSafeHost} (1).");
-                return;
-            }
-
-            if (remote.Client.RemoteEndPoint == null)
-            {
-                Console.WriteLine($"Can not connect to {request.Url.DnsSafeHost} (2).");
-                return;
+                throw new Exception($"Can not connect to {request.Url.DnsSafeHost}.");
             }
 
             // Handle connect request
