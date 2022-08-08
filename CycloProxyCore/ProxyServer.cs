@@ -10,6 +10,8 @@ namespace CycloProxyCore
         private bool _isRunning = false;
         private TcpListener _tcpListener;
 
+        public Dictionary<string, string> CustomDNS { get; set; } = new Dictionary<string, string>();
+
         [DllImport("kernel32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool AllocConsole();
@@ -69,16 +71,25 @@ namespace CycloProxyCore
             if (isRead == false) return;
 
             // Dns resolve
-            IPHostEntry ipHostEntry = Dns.GetHostEntry(request.Url.DnsSafeHost);
-            if (ipHostEntry.AddressList.Length == 0)
-            {
-                Console.WriteLine($"Can not resolve ip of {request.Url.DnsSafeHost}.");
-                return;
-            }
+            IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
-            // Get host ip
-            IPAddress ipAddress = ipHostEntry.AddressList.First();
-            IPEndPoint ipEndPoint = new IPEndPoint(ipAddress, request.Url.Port);
+            if (CustomDNS.ContainsKey(request.Url.DnsSafeHost))
+            {
+                IPAddress ipAddress = IPAddress.Parse(CustomDNS[request.Url.DnsSafeHost]);
+                ipEndPoint = new IPEndPoint(ipAddress, request.Url.Port);
+            }
+            else
+            {
+                IPHostEntry ipHostEntry = Dns.GetHostEntry(request.Url.DnsSafeHost);
+                if (ipHostEntry.AddressList.Length == 0)
+                {
+                    Console.WriteLine($"Can not resolve ip of {request.Url.DnsSafeHost}.");
+                    return;
+                }
+
+                IPAddress ipAddress = ipHostEntry.AddressList.First();
+                ipEndPoint = new IPEndPoint(ipAddress, request.Url.Port);
+            }
 
             // Create remote tcp client
             try

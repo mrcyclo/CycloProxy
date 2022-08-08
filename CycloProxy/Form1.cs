@@ -5,6 +5,8 @@ namespace CycloProxy
 {
     public partial class Form1 : Form
     {
+        private int port = 8877;
+
         public Form1()
         {
             InitializeComponent();
@@ -13,7 +15,8 @@ namespace CycloProxy
         private void Form1_Load(object sender, EventArgs e)
         {
             ProxyServer proxy = new ProxyServer();
-            proxy.Start(IPAddress.Any, 8888);
+            proxy.CustomDNS.Add("keycloak.local", "127.0.0.1");
+            proxy.Start(IPAddress.Any, port);
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -24,7 +27,7 @@ namespace CycloProxy
             {
                 Proxy = new WebProxy
                 {
-                    Address = new Uri($"http://localhost:8888"),
+                    Address = new Uri($"http://localhost:" + port),
                 }
             });
             try
